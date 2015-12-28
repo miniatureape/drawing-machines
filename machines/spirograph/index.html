@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>
+            Drawing Machines
+        </title>
+        <style>
+
+            body {
+                font-family: Georgia;
+                line-height: 30px;
+            }
+
+            #demo {
+                width: 500px;
+                height: 300px;
+                border: 1px solid #eee;
+                outline: none;
+                -moz-transition: background-color 0.6s;
+                -o-transition: background-color 0.6s;
+                -webkit-transition: background-color 0.6s;
+                transition: background-color 0.6s;
+                padding: 20px
+            }
+
+            .wrapper {
+                max-width: 500px;
+                margin: 50px auto;
+            }
+
+        </style>
+        <style>
+
+        canvas {
+            border: 1px solid gray;
+        }
+
+        label {
+            display: inline-block;
+            width: 70px;
+        }
+
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <p><em>Drawing Machine 02: Spin</em></p>
+            <canvas width=500 height=500 data-canvas></canvas>
+            <div class="controls">
+                <label>linewidth</label>
+                <input id="linewidth" type=range value=5 min=1 max=100 /><br />
+                <label>color</label>
+                <input id="color" type="color" />
+            </div>
+            <p>The hope is that in a glance one can tell something about the process.</p>
+        </div>
+        <script src="js/lib/vector2d.js"></script>
+        <script>
+
+            var canvas = document.querySelector('[data-canvas]');
+            var ctx = canvas.getContext('2d');
+
+            var spinSpeed = .1;
+            var center = new Vector2d(250, 250);
+            var lineWidth = 5;
+            var color = 'black';
+
+            var vector;
+            var timeDown = 0;
+            var lines = [];
+            var painting = false;
+
+
+            document
+                .getElementById('linewidth')
+                .addEventListener('change', function(e) {
+                lineWidth = e.currentTarget.value
+            });
+
+            document
+                .getElementById('color')
+                .addEventListener('change', function(e) {
+                color = e.currentTarget.value;
+            });
+
+            function paintLine(l) {
+                var vector = l[0];
+                var timeDown = l[1];
+                var lineWidth = l[2];
+                var color = l[3];
+                var r = vector.dist(center);
+                var angle = Vector2d.angle(center, vector);
+                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.arc(center.x, center.y, r, angle, angle + timeDown);
+                ctx.stroke();
+            }
+
+            canvas.addEventListener('mousedown', function(e) {
+                vector = new Vector2d(e.layerX, e.layerY);
+                painting = true;
+            });
+
+            canvas.addEventListener('mouseup', function(e) {
+                painting = false;
+                lines.push([vector, timeDown, lineWidth, color]);
+                timeDown = 0;
+            })
+
+            setInterval(function() {
+                ctx.clearRect(0, 0, center.x * 2, center.y * 2);
+                lines.forEach(paintLine);
+                if (painting) {
+                    paintLine([vector, timeDown, lineWidth, color]);
+                    timeDown += spinSpeed;
+                }
+            }, 10);
+
+
+        </script>
+    </body>
+</html>
