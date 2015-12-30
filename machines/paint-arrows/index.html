@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>
+            Drawing Machines
+        </title>
+        <style>
+
+            body {
+                font-family: Georgia;
+                line-height: 30px;
+            }
+
+            #demo {
+                width: 500px;
+                height: 300px;
+                border: 1px solid #eee;
+                outline: none;
+                -moz-transition: background-color 0.6s;
+                -o-transition: background-color 0.6s;
+                -webkit-transition: background-color 0.6s;
+                transition: background-color 0.6s;
+                padding: 20px
+            }
+
+            .wrapper {
+                max-width: 500px;
+                margin: 50px auto;
+            }
+
+        </style>
+        <style>
+
+        canvas {
+            border: 1px solid gray;
+        }
+
+        label {
+            display: inline-block;
+            width: 70px;
+        }
+
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <p><em>Drawing Machine 02: Paint Arrows</em></p>
+            <canvas width=500 height=500 data-canvas></canvas>
+            <div class="controls">
+                <label>linewidth</label>
+                <input id="linewidth" type=range value=5 min=1 max=100 /><br />
+                <label>color</label>
+                <input id="color" type="color" />
+            </div>
+            <p>The hope is that in a glance one can tell something about the process.</p>
+        </div>
+        <script src="js/vector2d.js"></script>
+        <script src="js/Bacon.js"></script>
+        <script>
+
+            var canvas = document.querySelector('[data-canvas]');
+            var ctx = canvas.getContext('2d');
+
+            var moveStream = Bacon.fromEvent(canvas, 'mousemove')
+            var downStream = Bacon.fromEvent(canvas, 'mousedown').onValue(function() {
+                moveStream.subscribe(
+            });
+            var upStream = Bacon.fromEvent(canvas, 'mouseup');
+
+            var coords = Bacon.zipWith(
+                function(x,y) { return new Vector2d(x,y) },
+                moveStream.map(".layerX"),
+                moveStream.map(".layerY")
+            );
+            coords.onValue(function(x, y) { console.log(x, y) });
+
+        </script>
+    </body>
+</html>
